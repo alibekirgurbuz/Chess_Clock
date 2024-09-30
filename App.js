@@ -1,22 +1,46 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Alert, Modal,StatusBar } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Alert, Modal, StatusBar } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import { Picker } from '@react-native-picker/picker';
+import { Audio } from 'expo-av'; // Import Audio from expo-av
 
 export default function App() {
-  const [topTime, setTopTime] = useState(300); // Varsayılan başlangıç süresi 5 dakika
+  const [topTime, setTopTime] = useState(300); // Default start time 5 minutes
   const [bottomTime, setBottomTime] = useState(300);
   const [activeClock, setActiveClock] = useState(null);
-  const [initialTime, setInitialTime] = useState(5); // Dakika cinsinden başlangıç süresi
-  const [increment, setIncrement] = useState(0); // Saniye cinsinden hamle sonrası ek süre
+  const [initialTime, setInitialTime] = useState(5); // Initial time in minutes
+  const [increment, setIncrement] = useState(0); // Increment time in seconds
   const [modalVisible, setModalVisible] = useState(false);
+
+  // Sound object reference for button click and pause sounds
+  const [sound, setSound] = useState();
+
+  // Function to load and play a sound based on the file passed
+  async function playSound(soundFile) {
+    try {
+      const { sound } = await Audio.Sound.createAsync(soundFile);
+      setSound(sound);
+      await sound.playAsync(); // Play the sound
+    } catch (error) {
+      console.error("Error loading or playing sound:", error); // Log error for debugging
+    }
+  }
+
+  // Clean up sound
+  useEffect(() => {
+    return sound
+      ? () => {
+          sound.unloadAsync(); // Unload sound when component unmounts
+        }
+      : undefined;
+  }, [sound]);
 
   const getBackgroundColor = (clock) => {
     if (clock === 'top') {
-      if (topTime === 0) return '#6a040f'; // Süresi biten oyuncu için kırmızı
+      if (topTime === 0) return '#6a040f'; // Red for out-of-time player
       return activeClock === 'top' ? '#FFD460' : '#8E9AAF';
     } else {
-      if (bottomTime === 0) return '#6a040f'; // Süresi biten oyuncu için kırmızı
+      if (bottomTime === 0) return '#6a040f'; // Red for out-of-time player
       return activeClock === 'bottom' ? '#FFD460' : '#8E9AAF';
     }
   };
@@ -35,7 +59,7 @@ export default function App() {
 
     if (topTime === 0 || bottomTime === 0) {
       clearInterval(timer);
-      Alert.alert('Oyun Bitti', `${activeClock === 'top' ? 'Alt' : 'Üst'} oyuncunun süresi doldu. Oyun sona erdi.`);
+      Alert.alert('Game Over', `${activeClock === 'top' ? 'Bottom' : 'Top'} player's time is up. Game over.`);
       setActiveClock(null);
     }
 
@@ -43,25 +67,46 @@ export default function App() {
   }, [activeClock, topTime, bottomTime]);
 
   const handlePress = (clock) => {
+    playSound(require('./assets/sounds/ButonSes.mp3')); // Play the default button click sound
     if (topTime > 0 && bottomTime > 0) {
       setActiveClock(clock === 'top' ? 'bottom' : 'top');
       if (clock === 'top') {
-        setTopTime(prev => prev + increment);
+        setTopTime((prev) => prev + increment);
       } else {
-        setBottomTime(prev => prev + increment);
+        setBottomTime((prev) => prev + increment);
       }
     }
   };
 
   const handlePause = () => {
+    playSound(require('./assets/sounds/PauseClick.mp3')); // Play the pause sound
     setActiveClock(null);
   };
 
   const handleReset = () => {
-    setTopTime(initialTime * 60);
-    setBottomTime(initialTime * 60);
-    setActiveClock(null);
+    Alert.alert(
+      "Uyarı", // Başlık
+      "Yenilemek istediğinizden emin misiniz?", // Mesaj
+      [
+        {
+          text: "Hayır", // Hayır butonu
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel", // Cancel stili
+        },
+        {
+          text: "Evet", // Evet butonu
+          onPress: () => {
+            playSound(require('./assets/sounds/refreshClick1.mp3')); // Sesi çal
+            setTopTime(initialTime * 60); // Zamanı resetle
+            setBottomTime(initialTime * 60);
+            setActiveClock(null);
+          },
+        },
+      ],
+      { cancelable: false }
+    );
   };
+  
 
   const handleSettings = () => {
     setModalVisible(true);
@@ -79,7 +124,7 @@ export default function App() {
   const renderInitialTimeOptions = () => {
     const options = [];
     for (let i = 1; i <= 90; i++) {
-      options.push(<Picker.Item key={i} label={`${i} dakika`} value={i} />);
+      options.push(<Picker.Item key={i} label={`${i} minutes`} value={i} />);
     }
     return options;
   };
@@ -87,7 +132,7 @@ export default function App() {
   const renderIncrementOptions = () => {
     const options = [];
     for (let i = 1; i <= 60; i++) {
-      options.push(<Picker.Item key={i} label={`${i} saniye`} value={i} />);
+      options.push(<Picker.Item key={i} label={`${i} seconds`} value={i} />);
     }
     return options;
   };
