@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "ReactNativeAntrenman",
+    "name": "Satranc Saati",
     "slug": "ReactNativeAntrenman",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/chess-clock.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
@@ -16,12 +16,18 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/chess-clock.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.alibov.ReactNativeAntrenman"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "e5b5d2b3-bebe-490d-863a-9a13fc8f1321"
+      }
     }
   }
 }

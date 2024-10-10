@@ -124,15 +124,15 @@ export default function App() {
   const renderInitialTimeOptions = () => {
     const options = [];
     for (let i = 1; i <= 90; i++) {
-      options.push(<Picker.Item key={i} label={`${i} minutes`} value={i} />);
+      options.push(<Picker.Item key={i} label={`${i} dakika`} value={i} />);
     }
     return options;
   };
 
   const renderIncrementOptions = () => {
     const options = [];
-    for (let i = 1; i <= 60; i++) {
-      options.push(<Picker.Item key={i} label={`${i} seconds`} value={i} />);
+    for (let i = 0; i <= 60; i++) {
+      options.push(<Picker.Item key={i} label={`${i} saniye`} value={i} />);
     }
     return options;
   };
@@ -182,7 +182,7 @@ export default function App() {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalView}>
-            <Text style={styles.modalText}>Initial Time (minutes):</Text>
+            <Text style={styles.modalText}>Süre:</Text>
             <Picker
               selectedValue={initialTime}
               onValueChange={(itemValue) => setInitialTime(itemValue)}
@@ -190,7 +190,7 @@ export default function App() {
             >
               {renderInitialTimeOptions()}
             </Picker>
-            <Text style={styles.modalText}>Increment (seconds):</Text>
+            <Text style={styles.modalText}>Ekleme:</Text>
             <Picker
               selectedValue={increment}
               onValueChange={(itemValue) => setIncrement(itemValue)}
