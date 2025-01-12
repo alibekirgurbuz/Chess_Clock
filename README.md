@@ -12,7 +12,7 @@
     ```
     npm install
     ```
- 3- Uygulamayı başlatın:
+- Uygulamayı başlatın:
     ```
     npx expo start
     ```
