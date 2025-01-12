@@ -7,8 +7,8 @@
 - Tahtada renkli geri bildirim
   
 ## 📥 Kurulum
- 1- Bu repoyu klonlayın
- 2- Gerekli bağımlılıkları yükleyin:
+- Bu repoyu klonlayın
+- Gerekli bağımlılıkları yükleyin:
     ```
     npm install
     ```
