@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Alert, Modal, StatusBar } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Alert, Modal, StatusBar, useColorScheme } from 'react-native';
 import Feather from '@expo/vector-icons/Feather';
 import { Picker } from '@react-native-picker/picker';
 import { Audio } from 'expo-av'; // Import Audio from expo-av
@@ -14,6 +14,7 @@ export default function App() {
 
   // Sound object reference for button click and pause sounds
   const [sound, setSound] = useState();
+  const colorScheme = useColorScheme();
 
   // Önce state'e yeni bir değişken ekleyelim
   const [alertConfig, setAlertConfig] = useState({
@@ -96,7 +97,7 @@ export default function App() {
   }, [activeClock, topTime, bottomTime]);
 
   const handlePress = (clock) => {
-    playSound(require('./assets/sounds/ButonSes.mp3')); // Play the default button click sound
+    playSound(require('./assets/sounds/ButtonClickUp.mp3')); // Play the default button click sound
     if (topTime > 0 && bottomTime > 0) {
       setActiveClock(clock === 'top' ? 'bottom' : 'top');
       if (clock === 'top') {
@@ -202,9 +203,13 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar 
+        barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'}
+        backgroundColor="transparent"
+        translucent={true}
+      />
       <TouchableOpacity
-        style={[styles.clockContainer, { backgroundColor: getBackgroundColor('top') }]}
+        style={[styles.clockContainer1, { backgroundColor: getBackgroundColor('top') }]}
         onPress={() => handlePress('top')}
         disabled={activeClock === 'bottom' || topTime === 0 || bottomTime === 0}
       >
@@ -224,7 +229,8 @@ export default function App() {
       </View>
 
       <TouchableOpacity
-        style={[styles.clockContainer, { backgroundColor: getBackgroundColor('bottom') }]}
+        style={[styles.clockContainer2, { backgroundColor: getBackgroundColor('bottom') }]}
+        
         onPress={() => handlePress('bottom')}
         disabled={activeClock === 'top' || topTime === 0 || bottomTime === 0}
       >
@@ -308,11 +314,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#161a1d',
   },
-  clockContainer: {
+  clockContainer1: {
     flex: 3,
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 10,
+    borderRadius: 10,
+    transform: [{ scaleX: -1 }, { scaleY: -1 }]
+  },
+  clockContainer2: {
+    flex: 3,
+    justifyContent: 'center',
+    alignItems: 'center',
     borderRadius: 10,
   },
   clockText: {
@@ -327,7 +339,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   controlButton: {
-    backgroundColor: '#FFF',
+    backgroundColor: '#FFD460',
     padding: 10,
     borderRadius: 5,
     minWidth: 80,

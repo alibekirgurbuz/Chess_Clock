@@ -4,10 +4,10 @@
     "slug": "ReactNativeAntrenman",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/chess-clock.png",
-    "userInterfaceStyle": "light",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
     "splash": {
-      "image": "./assets/king.png",
+      "image": "./assets/King.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
