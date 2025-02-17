@@ -1,4 +1,4 @@
-# Satranç Saati Uygulaması ⏱️
+![image](https://github.com/user-attachments/assets/a6747582-0a48-451c-9450-3f8cc8d6c1eb)# Satranç Saati Uygulaması ⏱️
 
 ## 🚀 Özellikler
 
@@ -18,7 +18,7 @@
     ```
 ## 📸 Ekran Görüntüleri
 
-  ![image](https://github.com/user-attachments/assets/3288ba5d-4548-4d67-b5c9-9a7403bd97c4)
+  ![image](https://github.com/user-attachments/assets/f4613234-e85f-4938-98ed-4800abe046fe)
 
   ![image](https://github.com/user-attachments/assets/10a8d79d-de2a-48d5-bc05-4c2b8ee6f061)
 
