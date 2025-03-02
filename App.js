@@ -37,21 +37,27 @@ export default function App() {
   // Function to load and play a sound based on the file passed
   async function playSound(soundFile) {
     try {
-      const { sound } = await Audio.Sound.createAsync(soundFile);
-      setSound(sound);
-      await sound.playAsync(); // Play the sound
+      if (sound) {
+        await sound.unloadAsync();
+      }
+      const { sound: newSound } = await Audio.Sound.createAsync(
+        soundFile,
+        { shouldPlay: true }
+      );
+      setSound(newSound);
     } catch (error) {
-      console.error("Error loading or playing sound:", error); // Log error for debugging
+      console.warn("Ses çalma hatası:", error);
+      // Ses çalınamasa bile uygulamanın çalışmaya devam etmesini sağla
     }
   }
 
   // Clean up sound
   useEffect(() => {
-    return sound
-      ? () => {
-          sound.unloadAsync(); // Unload sound when component unmounts
-        }
-      : undefined;
+    return () => {
+      if (sound) {
+        sound.unloadAsync();
+      }
+    };
   }, [sound]);
 
   const getBackgroundColor = (clock) => {
@@ -389,7 +395,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   modalButton: {
-    backgroundColor: 'green',
+    backgroundColor: 'orange',
     paddingHorizontal: 30,
     paddingVertical: 12,
     borderRadius: 8,
@@ -414,7 +420,7 @@ const styles = StyleSheet.create({
   },
   alertOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(22, 26, 29, 0.9)',
+    backgroundColor: 'rgba(37, 44, 49, 0.9)',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -443,13 +449,13 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   alertButton: {
-    backgroundColor: '#dc2f02',
+    backgroundColor: 'gray',
     padding: 12,
     borderRadius: 5,
     marginTop: 10,
   },
   alertButtonLast: {
-    backgroundColor: 'green',
+    backgroundColor: 'orange',
   },
   alertButtonText: {
     color: '#fff',
