@@ -18,11 +18,14 @@
     ```
 ## 📸 Ekran Görüntüleri
 
-  ![image](https://github.com/user-attachments/assets/3288ba5d-4548-4d67-b5c9-9a7403bd97c4)
+  ![image](https://github.com/user-attachments/assets/f4613234-e85f-4938-98ed-4800abe046fe)
+  
+  ![image](https://github.com/user-attachments/assets/89d99d42-a0d1-41c0-a6b4-877f94567605)
+  
+  ![image](https://github.com/user-attachments/assets/e63ae107-fbcd-4487-a436-a4f0a1b0025a)
 
-  ![image](https://github.com/user-attachments/assets/10a8d79d-de2a-48d5-bc05-4c2b8ee6f061)
 
-  ![image](https://github.com/user-attachments/assets/bf1eb44a-4ba2-4689-b88a-224ee00ee4f1)
+
 
 
   
