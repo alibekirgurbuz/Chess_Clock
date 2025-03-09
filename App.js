@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Alert, Modal, StatusBar, useColorScheme } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Alert, Modal, StatusBar, useColorScheme, SafeAreaView, Platform } from 'react-native';
+import { SystemNavigationBar } from 'react-native-system-navigation-bar';
 import Feather from '@expo/vector-icons/Feather';
 import { Picker } from '@react-native-picker/picker';
 import { Audio } from 'expo-av'; // Import Audio from expo-av
+import * as NavigationBar from 'expo-navigation-bar';  // Yeni import
 
 export default function App() {
   const [topTime, setTopTime] = useState(300.0); // Default start time 5 minutes
@@ -12,9 +14,18 @@ export default function App() {
   const [increment, setIncrement] = useState(0); // Increment time in seconds
   const [modalVisible, setModalVisible] = useState(false);
 
+  const [buttonClickSound, setButtonClickSound] = useState();
+  const [pauseSound, setPauseSound] = useState();
+  const [refreshSound, setRefreshSound] = useState();  
+
   // Sound object reference for button click and pause sounds
   const [sound, setSound] = useState();
   const colorScheme = useColorScheme();
+
+  // increment değişikliğini izleyen useEffect'i buraya taşıyoruz
+  useEffect(() => {
+    console.log("Increment değeri:", increment);
+  }, [increment]);
 
   // Önce state'e yeni bir değişken ekleyelim
   const [alertConfig, setAlertConfig] = useState({
@@ -51,14 +62,25 @@ export default function App() {
     }
   }
 
-  // Clean up sound
   useEffect(() => {
+    async function loadSounds() {
+      const { sound: btnSound } = await Audio.Sound.createAsync(require('./assets/sounds/ButtonClickUp.mp3'));
+      const { sound: pauseSoundObj } = await Audio.Sound.createAsync(require('./assets/sounds/PauseClick.mp3'));
+      const { sound: refreshSoundObj } = await Audio.Sound.createAsync(require('./assets/sounds/refreshClick1.mp3'));
+  
+      setButtonClickSound(btnSound);
+      setPauseSound(pauseSoundObj);
+      setRefreshSound(refreshSoundObj);
+    }
+  
+    loadSounds();
+  
     return () => {
-      if (sound) {
-        sound.unloadAsync();
-      }
+      buttonClickSound?.unloadAsync();
+      pauseSound?.unloadAsync();
+      refreshSound?.unloadAsync();
     };
-  }, [sound]);
+  }, []);
 
   const getBackgroundColor = (clock) => {
     if (clock === 'top') {
@@ -71,36 +93,19 @@ export default function App() {
   };
 
   useEffect(() => {
-    let timer;
-    if (activeClock === 'top' && topTime > 0) {
-      timer = setInterval(() => {
-        setTopTime((prev) => prev - 0.1);
-      }, 100);
-    } else if (activeClock === 'bottom' && bottomTime > 0) {
-      timer = setInterval(() => {
-        setBottomTime((prev) => prev - 0.1);
-      }, 100);
-    }
-
-    if (topTime <= 0 || bottomTime <= 0) {
-      clearInterval(timer);
-      // showCustomAlert(
-      //   "Oyun Bitti",
-      //   `${activeClock === 'top' ? 'Alt' : 'Üst'} oyuncunun süresi doldu!`,
-      //   [
-      //     {
-      //       text: "Tamam",
-      //       onPress: () => {
-      //         setActiveClock(null);
-      //         setAlertConfig(prev => ({ ...prev, visible: false }));
-      //       },
-      //     }
-      //   ]
-      // );
-    }
-
+    if (!activeClock) return;
+  
+    const timer = setInterval(() => {
+      if (activeClock === 'top') {
+        setTopTime(prev => Math.max(0, prev - 0.1)); // 0'ın altına düşmesini engelle
+      } else {
+        setBottomTime(prev => Math.max(0, prev - 0.1));
+      }
+    }, 100);
+  
     return () => clearInterval(timer);
-  }, [activeClock, topTime, bottomTime]);
+  }, [activeClock]); // Sadece aktif saat değiştiğinde çalışır.
+  
 
   const handlePress = (clock) => {
     playSound(require('./assets/sounds/ButtonClickUp.mp3')); // Play the default button click sound
@@ -149,12 +154,18 @@ export default function App() {
 
   const handleSaveSettings = () => {
     const validInitialTime = isNaN(initialTime) || initialTime <= 0 ? 5 : initialTime;
-    const validIncrement = isNaN(increment) || increment < 0 ? 0 : increment;
+    // increment değerini doğrudan sayıya çevirip kontrol ediyoruz
+    const validIncrement = parseInt(increment, 10);
+    const finalIncrement = isNaN(validIncrement) ? 0 : validIncrement;
+
     setTopTime(validInitialTime * 60);
     setBottomTime(validInitialTime * 60);
+    setIncrement(finalIncrement);
+
     setModalVisible(false);
     setActiveClock(null);
   };
+  
 
   const renderInitialTimeOptions = () => {
     const options = [];
@@ -169,8 +180,15 @@ export default function App() {
 
   const renderIncrementOptions = () => {
     const options = [];
+    // key ve value değerlerini string olarak ayarlıyoruz
     for (let i = 0; i <= 60; i++) {
-      options.push(<Picker.Item key={i} label={`${i} saniye`} value={i} />);
+      options.push(
+        <Picker.Item 
+          key={i.toString()} 
+          label={`${i} saniye`} 
+          value={i.toString()} 
+        />
+      );
     }
     return options;
   };
@@ -207,13 +225,31 @@ export default function App() {
     );
   };
 
+  useEffect(() => {
+    const hideNavigationBar = async () => {
+      try {
+        if (Platform.OS === 'android') {
+          // Navigation bar'ı şeffaf yap ve gizle
+          await NavigationBar.setBackgroundColorAsync('transparent');
+          await NavigationBar.setVisibilityAsync('hidden');
+          
+          // Tam ekran modu için
+          await NavigationBar.setBehaviorAsync('overlay');
+        }
+        
+        // StatusBar'ı gizle
+        StatusBar.setHidden(true);
+      } catch (error) {
+        console.warn('Navigation bar gizlenemedi:', error);
+      }
+    };
+
+    hideNavigationBar();
+  }, []);
+
   return (
-    <View style={styles.container}>
-      <StatusBar 
-        barStyle={colorScheme === 'dark' ? 'light-content' : 'dark-content'}
-        backgroundColor="transparent"
-        translucent={true}
-      />
+    <SafeAreaView style={[styles.container, { backgroundColor: '#161a1d' }]}>
+      <StatusBar hidden={true} />
       <TouchableOpacity
         style={[styles.clockContainer1, { backgroundColor: getBackgroundColor('top') }]}
         onPress={() => handlePress('top')}
@@ -310,7 +346,7 @@ export default function App() {
           </View>
         </View>
       </Modal>
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -319,6 +355,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     backgroundColor: '#161a1d',
+    margin: 0,
+    padding: 0,
   },
   clockContainer1: {
     flex: 3,

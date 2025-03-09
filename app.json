@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Satranc Saati",
+    "name": "Chess Clock",
     "slug": "ReactNativeAntrenman",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -12,14 +12,20 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "userInterfaceStyle": "dark"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/chess-clock.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.alibov.ReactNativeAntrenman"
+      "package": "com.alibov.ReactNativeAntrenman",
+      "softwareKeyboardLayoutMode": "pan",
+      "navigationBarColor": "transparent",
+      "navigationBarHidden": true,
+      "fullScreen": true,
+      "windowSoftInputMode": "adjustResize"
     },
     "web": {
       "favicon": "./assets/favicon.png"
